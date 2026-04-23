@@ -4,629 +4,421 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>DriveReadyMA Dashboard</title>
+<title>DriveReadyMA — MA Driving School OS</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap');
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-–bg:#080c14;
-–panel:#0f1623;
-–card:#141d2b;
-–border:#1e2d42;
-–blue:#3b82f6;
-–green:#22c55e;
-–red:#ef4444;
-–amber:#f59e0b;
-–teal:#14b8a6;
-–purple:#a78bfa;
-–text:#e2eaf6;
-–sub:#5a7a9e;
-–muted:#1e2d42;
+  --bg:#080c14;--panel:#0f1623;--card:#141d2b;--border:#1e2d42;
+  --blue:#3b82f6;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+  --teal:#14b8a6;--purple:#a78bfa;--pink:#f472b6;--text:#e2eaf6;--sub:#5a7a9e;
 }
-
-body{
-background:var(–bg);
-color:var(–text);
-font-family:‘DM Sans’,‘Segoe UI’,sans-serif;
-font-size:14px;
-padding:0;
-}
-
-/* ERROR BANNER */
-#error-banner{
-display:none;
-background:rgba(239,68,68,0.12);
-border-bottom:2px solid rgba(239,68,68,0.5);
-color:#fca5a5;
-padding:12px 24px;
-font-size:13px;
-line-height:1.6;
-}
-
-/* LOADER */
-#loader{
-position:fixed;inset:0;background:var(–bg);
-display:flex;flex-direction:column;align-items:center;justify-content:center;
-z-index:999;gap:14px;
-}
-.spinner{
-width:36px;height:36px;border:3px solid var(–border);
-border-top-color:var(–blue);border-radius:50%;
-animation:spin .8s linear infinite;
-}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans','Segoe UI',sans-serif;font-size:14px;padding:0}
+#loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:14px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loader-label{color:var(–sub);font-size:13px}
-
-/* HEADER */
-.header{
-background:var(–panel);
-border-bottom:1px solid var(–border);
-padding:14px 24px;
-display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
-}
+.loader-label{color:var(--sub);font-size:13px}
+#error-banner{display:none;background:rgba(239,68,68,0.12);border-bottom:2px solid rgba(239,68,68,0.5);color:#fca5a5;padding:12px 24px;font-size:13px;line-height:1.6}
+.header{background:var(--panel);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
 .logo{display:flex;align-items:center;gap:10px}
-.logo-icon{
-background:linear-gradient(135deg,#3b82f6,#1d4ed8);
-border-radius:8px;width:34px;height:34px;
-display:flex;align-items:center;justify-content:center;font-size:18px;
-}
+.logo-icon{background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px}
 .logo-name{font-weight:800;font-size:16px}
-.logo-sub{color:var(–sub);font-size:11px}
-.live-pill{
-display:flex;align-items:center;gap:6px;
-background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);
-color:var(–green);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;
-}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(–green);animation:pulse 1.5s ease-in-out infinite}
+.logo-sub{color:var(--sub);font-size:11px}
+.live-pill{display:flex;align-items:center;gap:6px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--green);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-#last-updated{color:var(–sub);font-size:12px}
-
-/* MAIN */
-.main{padding:20px 24px;max-width:1400px;margin:0 auto}
-
-/* PANELS */
-.panel{background:var(–panel);border:1px solid var(–border);border-radius:12px;padding:18px 20px}
-.section-title{font-weight:700;font-size:14px;margin-bottom:4px}
-.section-sub{color:var(–sub);font-size:12px;margin-bottom:14px}
-
-/* KPI ROW */
-.kpi-row{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-.kpi-card{
-background:var(–panel);border:1px solid var(–border);
-border-radius:10px;padding:16px 18px;flex:1;min-width:140px;border-top-width:3px;
-}
-.kpi-label{color:var(–sub);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
-.kpi-value{font-size:26px;font-weight:800;line-height:1}
-.kpi-sub{font-size:12px;margin-top:5px;font-weight:600}
-
-/* CHARTS ROW */
-.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
-.chart-stack{display:flex;flex-direction:column;gap:16px}
-.chart-wrap{position:relative}
-
-/* SCHEDULING ROW */
-.sched-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-
-.lesson-item{
-display:flex;justify-content:space-between;align-items:center;
-padding:9px 12px;border-radius:8px;
-background:rgba(255,255,255,0.03);border:1px solid var(–border);margin-bottom:8px;
-}
-.lesson-open{background:rgba(239,68,68,0.08);border:1px dashed var(–red)}
-.lesson-name{font-weight:600;font-size:13px}
-.lesson-open .lesson-name{color:var(–red);font-style:italic;font-weight:400}
-.lesson-time{color:var(–sub);font-size:11px;margin-top:2px}
-.lesson-badge{background:rgba(255,255,255,0.06);color:var(–sub);font-size:11px;padding:3px 9px;border-radius:20px}
-.open-badge{color:var(–red);font-size:11px;font-weight:700}
-
-.noshow-row{display:flex;gap:12px;margin-top:14px}
-.ns-card{flex:1;border-radius:8px;padding:12px 16px;text-align:center}
-.ns-value{font-size:24px;font-weight:800}
-.ns-label{color:var(–sub);font-size:11px;margin-top:4px}
-
-/* AUTOMATION */
-.auto-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.auto-card{
-background:rgba(255,255,255,0.03);border:1px solid var(–border);
-border-radius:10px;padding:14px;border-left-width:3px;
-}
-.auto-label{color:var(–sub);font-size:10px;text-transform:uppercase;letter-spacing:1px}
-.auto-value{font-size:22px;font-weight:800;margin-top:4px}
-.auto-sub{color:var(–sub);font-size:11px;margin-top:2px}
-
-/* PIPELINE */
-.pipe-item{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.pipe-label{min-width:90px;font-size:12px;color:var(–sub)}
-.pipe-bar-bg{flex:1;height:28px;background:var(–card);border-radius:6px;overflow:hidden}
-.pipe-bar{
-height:100%;border-radius:6px;
-display:flex;align-items:center;padding-left:10px;
-font-size:12px;font-weight:700;color:#fff;transition:width 1s ease;
-}
-
-/* ALERTS */
-.alert-item{
-border-radius:10px;padding:12px 16px;
-display:flex;align-items:center;gap:10px;
-margin-bottom:10px;font-size:13px;line-height:1.5;
-}
-.alert-icon{font-size:18px;flex-shrink:0}
-
-/* BOTTOM GRID */
-.bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-
-@media(max-width:900px){
-.charts-row,.sched-row,.bottom-row{grid-template-columns:1fr}
-.kpi-row{gap:8px}
-.kpi-card{min-width:120px}
-}
+#last-updated{color:var(--sub);font-size:11px}
+.section-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--sub);font-weight:700;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.main{padding:20px 24px;max-width:1500px;margin:0 auto}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.stitle{font-weight:700;font-size:14px;margin-bottom:3px}
+.ssub{color:var(--sub);font-size:12px;margin-bottom:12px}
+.row{margin-bottom:18px}
+.kpi-row{display:flex;gap:12px;flex-wrap:wrap}
+.kpi{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;flex:1;min-width:130px;border-top-width:3px}
+.kpi-label{color:var(--sub);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.kpi-value{font-size:24px;font-weight:800;line-height:1}
+.kpi-sub{font-size:11px;margin-top:4px;font-weight:600}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:16px}
+.pipe-item{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.pipe-label{min-width:100px;font-size:12px;color:var(--sub)}
+.pipe-bar-bg{flex:1;height:26px;background:var(--card);border-radius:6px;overflow:hidden}
+.pipe-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:10px;font-size:12px;font-weight:700;color:#fff;transition:width 1s ease;min-width:30px}
+.smin-row{display:flex;gap:10px;flex-wrap:wrap}
+.smin{flex:1;min-width:90px;border-radius:8px;padding:12px 14px;text-align:center}
+.smin-val{font-size:22px;font-weight:800}
+.smin-lbl{color:var(--sub);font-size:11px;margin-top:3px}
+.hr-item{margin-bottom:12px}
+.hr-hdr{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.hr-lbl{color:var(--sub)}
+.hr-cnt{font-weight:700}
+.hr-bg{height:8px;background:var(--card);border-radius:99px;overflow:hidden}
+.hr-bar{height:100%;border-radius:99px;transition:width 1s ease}
+.comp-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:8px}
+.comp-icon{font-size:15px;flex-shrink:0}
+.comp-text{flex:1;font-size:12px}
+.comp-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0;white-space:nowrap}
+.alert-item{border-radius:10px;padding:11px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:13px;line-height:1.5}
+.alert-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.mod-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:4px}
+.mod-cell{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;padding:7px 5px;text-align:center;font-size:9px;color:var(--sub);line-height:1.3}
+.mod-num{font-weight:700;font-size:11px;display:block;margin-bottom:2px}
+.divider{height:1px;background:var(--border);margin:14px 0}
+@media(max-width:1000px){.g2,.g3,.g21,.g12{grid-template-columns:1fr}}
+@media(max-width:700px){.kpi{min-width:120px}.mod-grid{grid-template-columns:repeat(3,1fr)}}
 </style>
-
 </head>
 <body>
-
-<!-- YOUR GOOGLE SHEET CSV URL -->
 
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxkkFxIeAba2pCfkWUatRbXIejuX9H5rKN6_mmm2tJqx7vw3ROw2MQZNABsrPkPA6V89Jd9pfiEqpM/pub?gid=1162947563&single=true&output=csv";
 const REFRESH_MS = 5 * 60 * 1000;
 </script>
 
-<!-- LOADER -->
-
-<div id="loader">
-  <div class="spinner"></div>
-  <div class="loader-label">Loading DriveReadyMA data...</div>
-</div>
-
-<!-- ERROR BANNER -->
-
+<div id="loader"><div class="spinner"></div><div class="loader-label">Loading MA Driving School OS...</div></div>
 <div id="error-banner"></div>
-
-<!-- HEADER -->
 
 <div class="header">
   <div class="logo">
     <div class="logo-icon">🚗</div>
-    <div>
-      <div class="logo-name">DriveReadyMA</div>
-      <div class="logo-sub">Performance Dashboard</div>
-    </div>
+    <div><div class="logo-name">MA Driving School OS</div><div class="logo-sub">RMV-Compliant · DriveReadyMA v2.0</div></div>
   </div>
-  <div class="live-pill"><div class="live-dot"></div>LIVE</div>
-  <div id="last-updated">Loading...</div>
+  <div class="live-pill"><div class="live-dot"></div>LIVE DATA</div>
+  <div id="last-updated">—</div>
 </div>
 
-<div class="main" id="main-content" style="display:none">
+<div class="main" id="main" style="display:none">
 
-  <!-- KPI CARDS -->
+  <!-- ROW 1: CORE KPIs -->
 
-  <div class="kpi-row">
-    <div class="kpi-card" style="border-top-color:var(--blue)">
-      <div class="kpi-label">Active Students</div>
-      <div class="kpi-value" id="k-active">—</div>
-      <div class="kpi-sub" style="color:var(--blue)">Training in progress</div>
-    </div>
-    <div class="kpi-card" style="border-top-color:var(--green)">
-      <div class="kpi-label">Completed Students</div>
-      <div class="kpi-value" id="k-completed">—</div>
-      <div class="kpi-sub" style="color:var(--green)">Training finished</div>
-    </div>
-    <div class="kpi-card" style="border-top-color:var(--purple)">
-      <div class="kpi-label">Road Test Eligible</div>
-      <div class="kpi-value" id="k-eligible">—</div>
-      <div class="kpi-sub" style="color:var(--purple)" id="k-eligible-sub">Ready to schedule</div>
-    </div>
-    <div class="kpi-card" style="border-top-color:var(--red)">
-      <div class="kpi-label">Unpaid Balances</div>
-      <div class="kpi-value" id="k-unpaid">—</div>
-      <div class="kpi-sub" id="k-unpaid-sub" style="color:var(--red)">Need collection</div>
-    </div>
-    <div class="kpi-card" style="border-top-color:var(--teal)">
-      <div class="kpi-label">Revenue Collected</div>
-      <div class="kpi-value" id="k-revenue">—</div>
-      <div class="kpi-sub" style="color:var(--teal)">This month</div>
-    </div>
-  </div>
-
-  <!-- CHARTS -->
-
-  <div class="charts-row">
-    <div class="panel">
-      <div class="section-title">Student Pipeline — Driving School Pipeline</div>
-      <div class="section-sub">All stages this month</div>
-      <div class="chart-wrap" style="height:200px">
-        <canvas id="lineChart"></canvas>
+  <div class="row">
+    <div class="section-lbl">Student Overview</div>
+    <div class="kpi-row">
+      <div class="kpi" style="border-top-color:var(--blue)">
+        <div class="kpi-label">Active Students</div>
+        <div class="kpi-value" id="k-active">—</div>
+        <div class="kpi-sub" style="color:var(--blue)">Training in progress</div>
       </div>
-    </div>
-    <div class="chart-stack">
-      <div class="panel" style="flex:1">
-        <div class="section-title">Training Status</div>
-        <div class="chart-wrap" style="height:130px">
-          <canvas id="pieChart"></canvas>
-        </div>
+      <div class="kpi" style="border-top-color:var(--green)">
+        <div class="kpi-label">Completed</div>
+        <div class="kpi-value" id="k-completed">—</div>
+        <div class="kpi-sub" style="color:var(--green)">All requirements met</div>
       </div>
-      <div class="panel" style="flex:1">
-        <div class="section-title">Appointments This Week</div>
-        <div class="chart-wrap" style="height:110px">
-          <canvas id="funnelChart"></canvas>
-        </div>
+      <div class="kpi" style="border-top-color:var(--purple)">
+        <div class="kpi-label">Road Test Eligible</div>
+        <div class="kpi-value" id="k-eligible">—</div>
+        <div class="kpi-sub" id="k-eligible-sub" style="color:var(--purple)">Permit ≥ 6 months</div>
+      </div>
+      <div class="kpi" style="border-top-color:var(--red)">
+        <div class="kpi-label">Unpaid Balances</div>
+        <div class="kpi-value" id="k-unpaid">—</div>
+        <div class="kpi-sub" id="k-unpaid-sub" style="color:var(--red)">Need collection</div>
+      </div>
+      <div class="kpi" style="border-top-color:var(--teal)">
+        <div class="kpi-label">Revenue Collected</div>
+        <div class="kpi-value" id="k-revenue">—</div>
+        <div class="kpi-sub" style="color:var(--teal)">Stripe / Payments</div>
+      </div>
+      <div class="kpi" style="border-top-color:var(--amber)">
+        <div class="kpi-label">Exam Pending</div>
+        <div class="kpi-value" id="k-exam">—</div>
+        <div class="kpi-sub" style="color:var(--amber)">Hours done · exam not passed</div>
       </div>
     </div>
   </div>
 
-  <!-- SCHEDULING + AUTOMATION -->
+  <!-- ROW 2: PIPELINE + APPOINTMENTS -->
 
-  <div class="sched-row">
+  <div class="row g21">
     <div class="panel">
-      <div class="section-title">Weekly Appointment Summary</div>
-      <div class="section-sub">All 4 calendars this week</div>
-
-```
-  <div class="lesson-item">
-    <div><div class="lesson-name" id="appt-booked-label">— appointments booked</div><div class="lesson-time">This week across all calendars</div></div>
-    <div class="lesson-badge" style="color:var(--green)">BOOKED</div>
-  </div>
-  <div class="lesson-item">
-    <div><div class="lesson-name" id="appt-noshow-label">— no shows</div><div class="lesson-time">Check no-show recovery workflow</div></div>
-    <div class="lesson-badge" id="noshow-badge">NO SHOW</div>
-  </div>
-  <div class="lesson-item">
-    <div><div class="lesson-name" id="appt-cancel-label">— cancellations</div><div class="lesson-time">Consider rescheduling link in workflow</div></div>
-    <div class="lesson-badge" style="color:var(--amber)">CANCELLED</div>
-  </div>
-  <div class="lesson-item lesson-open" id="unpaid-row">
-    <div><div class="lesson-name" id="unpaid-label">— unpaid balances</div><div class="lesson-time">Payment collection needed</div></div>
-    <div class="open-badge">ACTION NEEDED</div>
-  </div>
-
-  <div class="noshow-row">
-    <div class="ns-card" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3)">
-      <div class="ns-value" id="s-noshow" style="color:var(--red)">—</div>
-      <div class="ns-label">No-Shows This Week</div>
-    </div>
-    <div class="ns-card" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3)">
-      <div class="ns-value" id="s-cancel" style="color:var(--amber)">—</div>
-      <div class="ns-label">Cancellations</div>
-    </div>
-  </div>
-</div>
-
-<div class="panel">
-  <div class="section-title">⚡ Pipeline by Stage</div>
-  <div class="section-sub">Students in each phase of training</div>
-  <div class="auto-grid">
-    <div class="auto-card" style="border-left-color:var(--blue)">
-      <div class="auto-label">New Lead</div>
-      <div class="auto-value" id="p-newlead" style="color:var(--blue)">—</div>
-      <div class="auto-sub">Inquiry stage</div>
-    </div>
-    <div class="auto-card" style="border-left-color:var(--purple)">
-      <div class="auto-label">Registered</div>
-      <div class="auto-value" id="p-registered" style="color:var(--purple)">—</div>
-      <div class="auto-sub">Signed up</div>
-    </div>
-    <div class="auto-card" style="border-left-color:var(--amber)">
-      <div class="auto-label">In Progress</div>
-      <div class="auto-value" id="p-inprogress" style="color:var(--amber)">—</div>
-      <div class="auto-sub">Active training</div>
-    </div>
-    <div class="auto-card" style="border-left-color:var(--teal)">
-      <div class="auto-label">Road Test</div>
-      <div class="auto-value" id="p-roadtest" style="color:var(--teal)">—</div>
-      <div class="auto-sub">Test ready</div>
-    </div>
-  </div>
-</div>
-```
-
-  </div>
-
-  <!-- PIPELINE + ALERTS -->
-
-  <div class="bottom-row">
-    <div class="panel">
-      <div class="section-title">Pipeline Overview</div>
-      <div class="section-sub">New Lead → Completed</div>
+      <div class="stitle">Leads by Pipeline Stage — Driving School Pipeline</div>
+      <div class="ssub">New Lead → Quoted → Registered → In Progress → Completed</div>
       <div id="pipeline-bars"></div>
+      <div style="position:relative;height:150px;margin-top:12px"><canvas id="pipeChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="stitle">📅 Appointments This Week</div>
+      <div class="ssub">All 4 calendars</div>
+      <div class="smin-row" style="margin-bottom:14px">
+        <div class="smin" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3)">
+          <div class="smin-val" id="s-booked" style="color:var(--green)">—</div>
+          <div class="smin-lbl">Booked</div>
+        </div>
+        <div class="smin" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3)">
+          <div class="smin-val" id="s-noshow" style="color:var(--red)">—</div>
+          <div class="smin-lbl">No Shows</div>
+        </div>
+        <div class="smin" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3)">
+          <div class="smin-val" id="s-cancel" style="color:var(--amber)">—</div>
+          <div class="smin-lbl">Cancelled</div>
+        </div>
+      </div>
+      <div class="stitle">By Calendar Type</div>
+      <div style="position:relative;height:130px;margin-top:8px"><canvas id="calChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ROW 3: HOURS + COMPLIANCE + GROWTH -->
+
+  <div class="row g3">
+    <div class="panel">
+      <div class="stitle">📚 RMV Hour Tracking</div>
+      <div class="ssub">Average hours per active student</div>
+      <div class="hr-item">
+        <div class="hr-hdr"><span class="hr-lbl">Classroom (need 30)</span><span class="hr-cnt" id="h-class" style="color:var(--blue)">—</span></div>
+        <div class="hr-bg"><div class="hr-bar" id="hb-class" style="background:var(--blue);width:0%"></div></div>
+      </div>
+      <div class="hr-item">
+        <div class="hr-hdr"><span class="hr-lbl">Observation (need 6)</span><span class="hr-cnt" id="h-obs" style="color:var(--teal)">—</span></div>
+        <div class="hr-bg"><div class="hr-bar" id="hb-obs" style="background:var(--teal);width:0%"></div></div>
+      </div>
+      <div class="hr-item">
+        <div class="hr-hdr"><span class="hr-lbl">Driving (need 6)</span><span class="hr-cnt" id="h-drive" style="color:var(--green)">—</span></div>
+        <div class="hr-bg"><div class="hr-bar" id="hb-drive" style="background:var(--green);width:0%"></div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="stitle">💳 Payment Status</div>
+      <div class="smin-row" style="margin-top:10px">
+        <div class="smin" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25)">
+          <div class="smin-val" id="pay-dep" style="color:var(--green)">—</div>
+          <div class="smin-lbl">Deposit Paid</div>
+        </div>
+        <div class="smin" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.25)">
+          <div class="smin-val" id="pay-bal" style="color:var(--teal)">—</div>
+          <div class="smin-lbl">Balance Paid</div>
+        </div>
+        <div class="smin" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25)">
+          <div class="smin-val" id="pay-owed" style="color:var(--red)">—</div>
+          <div class="smin-lbl">Unpaid</div>
+        </div>
+      </div>
     </div>
 
 ```
 <div class="panel">
-  <div class="section-title">🚨 Alerts & Insights</div>
-  <div class="section-sub">Action items based on your live data</div>
-  <div id="alerts-list"></div>
+  <div class="stitle">✅ RMV Compliance</div>
+  <div class="ssub">Massachusetts requirements · live status</div>
+  <div id="comp-list"></div>
+</div>
+
+<div class="panel">
+  <div class="stitle">⭐ Growth Engine</div>
+  <div class="ssub">Reviews · Referrals · Waitlist</div>
+  <div class="smin-row">
+    <div class="smin" style="background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.25)">
+      <div class="smin-val" id="g-reviews" style="color:var(--pink)">—</div>
+      <div class="smin-lbl">Google Reviews</div>
+    </div>
+    <div class="smin" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25)">
+      <div class="smin-val" id="g-referrals" style="color:var(--purple)">—</div>
+      <div class="smin-lbl">Referrals</div>
+    </div>
+    <div class="smin" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25)">
+      <div class="smin-val" id="g-waitlist" style="color:var(--amber)">—</div>
+      <div class="smin-lbl">Waitlisted</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="stitle">📋 15 RMV Required Modules</div>
+  <div class="ssub" style="margin-bottom:8px">Massachusetts curriculum tracking</div>
+  <div class="mod-grid" id="mod-grid"></div>
 </div>
 ```
 
   </div>
 
-</div><!-- /main -->
+  <!-- ROW 4: ALERTS -->
+
+  <div class="row">
+    <div class="panel">
+      <div class="stitle">🚨 Alerts & Insights</div>
+      <div class="ssub">Action items based on your live GHL data</div>
+      <div id="alerts-list" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+    </div>
+  </div>
+
+</div>
 
 <script>
-const gridColor = 'rgba(30,45,66,0.8)';
-const tickColor = '#5a7a9e';
-let lineChart, pieChart, funnelChart;
+const GC='rgba(30,45,66,0.8)',TC='#5a7a9e';
+let pipeChart,calChart;
 
-// ── LOAD DATA FROM GOOGLE SHEET ───────────────────────────────
-async function loadData() {
-  try {
-    const res = await fetch(SHEET_URL + "&cachebust=" + Date.now());
-
-    if (!res.ok) {
-      throw new Error("HTTP " + res.status + " — check that your Sheet is published publicly.");
-    }
-
-    const text = await res.text();
-
-    // If Google returns HTML instead of CSV, sheet isn't published
-    if (text.trim().startsWith("<!") || text.trim().startsWith("<html")) {
-      throw new Error("Sheet not published. Open Google Sheets → File → Share → Publish to web → Dashboard_Summary tab → CSV → Publish.");
-    }
-
-    const rows = parseCSV(text);
-
-    if (rows.length < 2) {
-      throw new Error("No data row in sheet yet. Run testWebhook() in Google Apps Script to write test data.");
-    }
-
-    if (!rows[1][0] || rows[1][0] === "Last Updated") {
-      throw new Error("Dashboard_Summary tab is empty. Run testWebhook() in Apps Script to populate it.");
-    }
-
-    // Hide error banner and render
-    document.getElementById("error-banner").style.display = "none";
-    renderDashboard(rows[1]);
-
-  } catch(err) {
+async function loadData(){
+  try{
+    const res=await fetch(SHEET_URL+"&cb="+Date.now());
+    if(!res.ok) throw new Error("HTTP "+res.status+" — check Sheet is published publicly");
+    const txt=await res.text();
+    if(txt.trim().startsWith("<")) throw new Error("Sheet not published. File → Share → Publish to web → Dashboard_Summary → CSV → Publish");
+    const rows=parseCSV(txt);
+    if(rows.length<2) throw new Error("No data row — run testWebhook() in Apps Script first");
+    if(!rows[1][0]||rows[1][0]==="Last Updated") throw new Error("Dashboard_Summary is empty — run testWebhook() in Apps Script");
+    document.getElementById("error-banner").style.display="none";
+    render(rows[1]);
+  }catch(err){
     showError(err.message);
-    renderDashboard(getSampleData()); // always show something
+    render(sample());
   }
 }
 
-function parseCSV(text) {
-  return text.trim().split("\n").map(function(line) {
-    var cells = [], cur = "", inQ = false;
-    for (var i = 0; i < line.length; i++) {
-      if (line[i] === '"') { inQ = !inQ; }
-      else if (line[i] === ',' && !inQ) { cells.push(cur.trim()); cur = ""; }
-      else { cur += line[i]; }
+function parseCSV(txt){
+  return txt.trim().split("\n").map(function(line){
+    var c=[],cur="",q=false;
+    for(var i=0;i<line.length;i++){
+      if(line[i]==='"'){q=!q;}
+      else if(line[i]===','&&!q){c.push(cur.trim());cur="";}
+      else{cur+=line[i];}
     }
-    cells.push(cur.trim());
-    return cells;
+    c.push(cur.trim());return c;
   });
 }
 
-// ── RENDER DASHBOARD FROM DATA ROW ───────────────────────────
-function renderDashboard(d) {
-  // Column map: A=0 B=1 C=2 D=3 E=4 F=5 G=6 H=7 I=8 J=9 K=10 L=11 M=12 N=13
-  var updated   = d[0]  || new Date().toISOString();
-  var active    = int(d[1]);
-  var completed = int(d[2]);
-  var eligible  = int(d[3]);
-  var unpaid    = int(d[4]);
-  var revenue   = float(d[5]);
-  var booked    = int(d[6]);
-  var noShows   = int(d[7]);
-  var cancels   = int(d[8]);
-  var pNew      = int(d[9]);
-  var pReg      = int(d[10]);
-  var pInProg   = int(d[11]);
-  var pRoadTest = int(d[12]);
-  var pDone     = int(d[13]);
+function render(d){
+  var updated=d[0]||new Date().toISOString();
+  var active=n(d[1]),completed=n(d[2]),eligible=n(d[3]);
+  var unpaid=n(d[4]),revenue=f(d[5]);
+  var booked=n(d[6]),noShows=n(d[7]),cancels=n(d[8]);
+  var pNew=n(d[9]),pQuoted=n(d[10]),pReg=n(d[11]),pInProg=n(d[12]),pDone=n(d[13]);
+  var reviews=n(d[14]),referrals=n(d[15]);
+  var depPaid=n(d[16]),balPaid=n(d[17]),examPend=n(d[18]);
+  var avgClass=f(d[19]),avgObs=f(d[20]),avgDrive=f(d[21]);
+  var waitlist=n(d[22]);
+  var aClass=n(d[23]),aObs=n(d[24]),aDrive=n(d[25]),aParent=n(d[26]);
 
-  // KPI cards
-  set("k-active",    active);
-  set("k-completed", completed);
-  set("k-eligible",  eligible);
-  set("k-unpaid",    unpaid);
-  set("k-revenue",   "$" + revenue.toLocaleString());
+  // KPIs
+  s("k-active",active);s("k-completed",completed);s("k-eligible",eligible);
+  s("k-unpaid",unpaid);s("k-revenue","$"+revenue.toLocaleString());s("k-exam",examPend);
+  var us=document.getElementById("k-unpaid-sub");
+  us.textContent=unpaid===0?"✅ All collected":unpaid+" need collection";
+  us.style.color=unpaid===0?"var(--green)":"var(--red)";
+  if(eligible>0)s("k-eligible-sub",eligible+" ready to test");
 
-  // Unpaid sub color
-  var unpaidSub = document.getElementById("k-unpaid-sub");
-  if (unpaid === 0) {
-    unpaidSub.textContent = "✅ All paid up";
-    unpaidSub.style.color = "var(--green)";
-  } else {
-    unpaidSub.textContent = unpaid + " need collection";
-    unpaidSub.style.color = "var(--red)";
-  }
-
-  // Eligible sub
-  if (eligible > 0) {
-    document.getElementById("k-eligible-sub").textContent = eligible + " ready to schedule";
-  }
-
-  // Appointment summary rows
-  set("appt-booked-label", booked + " appointments booked");
-  set("appt-noshow-label", noShows + " no shows");
-  set("appt-cancel-label", cancels + " cancellations");
-  set("unpaid-label",      unpaid + " unpaid balances");
-  set("s-noshow", noShows);
-  set("s-cancel",  cancels);
-
-  // No show badge color
-  document.getElementById("noshow-badge").style.color = noShows > 3 ? "var(--red)" : "var(--sub)";
-
-  // Unpaid row — hide if zero
-  document.getElementById("unpaid-row").style.display = unpaid === 0 ? "none" : "flex";
-
-  // Pipeline stage cards
-  set("p-newlead",    pNew);
-  set("p-registered", pReg);
-  set("p-inprogress", pInProg);
-  set("p-roadtest",   pRoadTest);
-
-  // Last updated
-  try {
-    set("last-updated", "Updated " + new Date(updated).toLocaleTimeString());
-  } catch(e) {
-    set("last-updated", "Live");
-  }
-
-  // Charts
-  buildBarChart(pNew, pReg, pInProg, pRoadTest, pDone);
-  buildPieChart(active, completed, eligible);
-  buildApptChart(booked, noShows, cancels);
+  // Appointments
+  s("s-booked",booked);s("s-noshow",noShows);s("s-cancel",cancels);
 
   // Pipeline bars
-  buildPipelineBars(pNew, pReg, pInProg, pRoadTest, pDone);
+  var max=Math.max(pNew,1);
+  var stages=[
+    {l:"New Lead",v:pNew,c:"var(--blue)"},
+    {l:"Quoted",v:pQuoted,c:"var(--sub)"},
+    {l:"Registered",v:pReg,c:"var(--purple)"},
+    {l:"In Progress",v:pInProg,c:"var(--amber)"},
+    {l:"Completed",v:pDone,c:"var(--green)"}
+  ];
+  document.getElementById("pipeline-bars").innerHTML=stages.map(function(s){
+    var pct=Math.max(4,(s.v/max)*100);
+    return '<div class="pipe-item"><div class="pipe-label">'+s.l+'</div>'
+      +'<div class="pipe-bar-bg"><div class="pipe-bar" style="width:'+pct+'%;background:'+s.c+'">'+s.v+'</div></div></div>';
+  }).join("");
+
+  // Pipeline chart
+  if(pipeChart)pipeChart.destroy();
+  pipeChart=new Chart(document.getElementById("pipeChart"),{
+    type:"bar",
+    data:{labels:["New Lead","Quoted","Registered","In Progress","Completed"],
+      datasets:[{data:[pNew,pQuoted,pReg,pInProg,pDone],backgroundColor:["#3b82f6","#5a7a9e","#a78bfa","#f59e0b","#22c55e"],borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:GC},ticks:{color:TC,font:{size:10}}},y:{grid:{color:GC},ticks:{color:TC,font:{size:10}}}}}
+  });
+
+  // Calendar chart
+  if(calChart)calChart.destroy();
+  calChart=new Chart(document.getElementById("calChart"),{
+    type:"doughnut",
+    data:{labels:["Classroom","Observation","Driving","Parent Class"],
+      datasets:[{data:[aClass,aObs,aDrive,aParent],backgroundColor:["#3b82f6","#14b8a6","#22c55e","#a78bfa"],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"right",labels:{color:TC,font:{size:10},boxWidth:10}}}}
+  });
+
+  // Hours
+  s("h-class",avgClass.toFixed(1)+" / 30 avg");
+  s("h-obs",avgObs.toFixed(1)+" / 6 avg");
+  s("h-drive",avgDrive.toFixed(1)+" / 6 avg");
+  document.getElementById("hb-class").style.width=Math.min(100,(avgClass/30)*100)+"%";
+  document.getElementById("hb-obs").style.width=Math.min(100,(avgObs/6)*100)+"%";
+  document.getElementById("hb-drive").style.width=Math.min(100,(avgDrive/6)*100)+"%";
+
+  // Payments
+  s("pay-dep",depPaid);s("pay-bal",balPaid);s("pay-owed",unpaid);
+
+  // Growth
+  s("g-reviews",reviews);s("g-referrals",referrals);s("g-waitlist",waitlist);
+
+  // Compliance
+  var comps=[
+    {icon:"📚",label:"Classroom Hrs avg ≥ 30",ok:avgClass>=30,detail:avgClass.toFixed(1)+" / 30"},
+    {icon:"👁", label:"Observation Hrs avg ≥ 6",ok:avgObs>=6,  detail:avgObs.toFixed(1)+" / 6"},
+    {icon:"🚗",label:"Driving Hrs avg ≥ 6",     ok:avgDrive>=6,detail:avgDrive.toFixed(1)+" / 6"},
+    {icon:"💳",label:"All Balances Collected",   ok:unpaid===0, detail:unpaid===0?"✅ Clear":unpaid+" owed"},
+    {icon:"📝",label:"No Pending Final Exams",   ok:examPend===0,detail:examPend===0?"✅ Clear":examPend+" pending"},
+    {icon:"🛣", label:"Road Test Eligible",       ok:eligible>0, detail:eligible+" ready"},
+  ];
+  document.getElementById("comp-list").innerHTML=comps.map(function(c){
+    var col=c.ok?"var(--green)":"var(--amber)";
+    var bg=c.ok?"rgba(34,197,94,0.08)":"rgba(245,158,11,0.08)";
+    var bd=c.ok?"rgba(34,197,94,0.25)":"rgba(245,158,11,0.25)";
+    return '<div class="comp-item" style="background:'+bg+';border:1px solid '+bd+'">'
+      +'<span class="comp-icon">'+c.icon+'</span>'
+      +'<span class="comp-text">'+c.label+'</span>'
+      +'<span class="comp-badge" style="background:'+bg+';color:'+col+';border:1px solid '+bd+'">'+c.detail+'</span>'
+      +'</div>';
+  }).join("");
+
+  // Modules
+  var mods=["Highway Driving","Adverse Conditions","Sharing the Road","Impaired Driving","Distracted Driving",
+    "Aggressive Driving","Occupant Protection","Speed Management","Traffic Controls","Night Driving",
+    "Vehicle Systems","Environmental Issues","Purchasing a Vehicle","Laws & Regulations","Emergency Situations"];
+  document.getElementById("mod-grid").innerHTML=mods.map(function(m,i){
+    return '<div class="mod-cell"><span class="mod-num">'+(i+1)+'</span>'+m+'</div>';
+  }).join("");
 
   // Alerts
-  buildAlerts(active, completed, eligible, unpaid, noShows, booked, revenue, cancels);
+  var alerts=[];
+  if(unpaid>0) alerts.push({t:"danger",i:"💸",m:unpaid+" unpaid balance"+(unpaid>1?"s":"")+" — trigger payment collection"});
+  if(examPend>0) alerts.push({t:"warn",i:"📝",m:examPend+" student"+(examPend>1?"s":"")+" passed hours but not final exam — reach out"});
+  if(eligible>0) alerts.push({t:"info",i:"🚗",m:eligible+" student"+(eligible>1?"s":"")+" ready for RMV road test — contact to schedule"});
+  if(noShows>3) alerts.push({t:"warn",i:"⚠️",m:noShows+" no-shows this week — check 2-hour reminder SMS workflow"});
+  if(waitlist>0) alerts.push({t:"info",i:"📋",m:waitlist+" on waitlist — check for cancellations to fill slots"});
+  if(unpaid===0&&active>0) alerts.push({t:"success",i:"✅",m:"All balances collected — payment workflow running correctly"});
+  if(revenue>0) alerts.push({t:"success",i:"💰",m:"$"+revenue.toLocaleString()+" collected · "+completed+" students completed"});
+  if(reviews>5) alerts.push({t:"success",i:"⭐",m:reviews+" Google reviews requested — reputation engine working"});
+  if(referrals>0) alerts.push({t:"success",i:"🤝",m:referrals+" referral"+(referrals>1?"s":"")+" generated — referral workflow active"});
+  if(alerts.length===0) alerts.push({t:"info",i:"📊",m:"Dashboard live. Data populates as students move through your pipeline."});
 
-  // Show dashboard, hide loader
-  document.getElementById("loader").style.display = "none";
-  document.getElementById("main-content").style.display = "block";
-}
-
-// ── CHARTS ────────────────────────────────────────────────────
-function buildBarChart(n, r, ip, rt, c) {
-  if (lineChart) lineChart.destroy();
-  lineChart = new Chart(document.getElementById("lineChart"), {
-    type: "bar",
-    data: {
-      labels: ["New Lead","Registered","In Progress","Road Test","Completed"],
-      datasets: [{
-        data: [n, r, ip, rt, c],
-        backgroundColor: ["#3b82f6","#a78bfa","#f59e0b","#14b8a6","#22c55e"],
-        borderRadius: 6
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
-        y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } }
-      }
-    }
-  });
-}
-
-function buildPieChart(active, completed, eligible) {
-  if (pieChart) pieChart.destroy();
-  pieChart = new Chart(document.getElementById("pieChart"), {
-    type: "doughnut",
-    data: {
-      labels: ["In Progress","Completed","Road Test Ready"],
-      datasets: [{
-        data: [active, completed, eligible],
-        backgroundColor: ["#3b82f6","#22c55e","#a78bfa"],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: "right", labels: { color: tickColor, font: { size: 10 }, boxWidth: 10 } } }
-    }
-  });
-}
-
-function buildApptChart(booked, noShow, cancel) {
-  if (funnelChart) funnelChart.destroy();
-  funnelChart = new Chart(document.getElementById("funnelChart"), {
-    type: "bar",
-    data: {
-      labels: ["Booked","No Show","Cancelled"],
-      datasets: [{
-        data: [booked, noShow, cancel],
-        backgroundColor: ["#22c55e","#ef4444","#f59e0b"],
-        borderRadius: 4
-      }]
-    },
-    options: {
-      indexAxis: "y",
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 } } },
-        y: { grid: { display: false }, ticks: { color: tickColor, font: { size: 10 } } }
-      }
-    }
-  });
-}
-
-function buildPipelineBars(n, r, ip, rt, c) {
-  var max = Math.max(n, 1);
-  var stages = [
-    { label: "New Lead",    val: n,  color: "var(--blue)"   },
-    { label: "Registered",  val: r,  color: "var(--purple)" },
-    { label: "In Progress", val: ip, color: "var(--amber)"  },
-    { label: "Road Test",   val: rt, color: "var(--teal)"   },
-    { label: "Completed",   val: c,  color: "var(--green)"  }
-  ];
-  document.getElementById("pipeline-bars").innerHTML = stages.map(function(s) {
-    var pct = Math.max(6, (s.val / max) * 100);
-    return '<div class="pipe-item">'
-      + '<div class="pipe-label">' + s.label + '</div>'
-      + '<div class="pipe-bar-bg"><div class="pipe-bar" style="width:' + pct + '%;background:' + s.color + '">' + s.val + '</div></div>'
-      + '</div>';
-  }).join("");
-}
-
-function buildAlerts(active, completed, eligible, unpaid, noShows, booked, revenue, cancels) {
-  var alerts = [];
-  if (unpaid > 0)
-    alerts.push({ type:"danger", icon:"💸", msg: unpaid + " student" + (unpaid > 1 ? "s have" : " has") + " an unpaid balance — trigger payment collection workflow now" });
-  if (eligible > 0)
-    alerts.push({ type:"info", icon:"🚗", msg: eligible + " student" + (eligible > 1 ? "s are" : " is") + " road test eligible — reach out to schedule their test" });
-  if (noShows > 3)
-    alerts.push({ type:"warn", icon:"⚠️", msg: noShows + " no-shows this week — verify your 2-hour reminder SMS workflow is active" });
-  if (unpaid === 0 && active > 0)
-    alerts.push({ type:"success", icon:"✅", msg: "All student balances paid — payment collection workflow running correctly" });
-  if (revenue > 0)
-    alerts.push({ type:"success", icon:"💰", msg: "$" + revenue.toLocaleString() + " collected this month — " + completed + " students completed training" });
-  if (booked > 10)
-    alerts.push({ type:"success", icon:"📅", msg: "Strong booking week — " + booked + " appointments across all 4 calendars" });
-  if (alerts.length === 0)
-    alerts.push({ type:"info", icon:"📊", msg: "Dashboard connected. Data will populate as students move through your pipeline." });
-
-  var colors = {
-    danger:  { bg:"rgba(239,68,68,0.1)",   border:"rgba(239,68,68,0.35)"  },
-    warn:    { bg:"rgba(245,158,11,0.1)",  border:"rgba(245,158,11,0.35)" },
-    success: { bg:"rgba(34,197,94,0.1)",   border:"rgba(34,197,94,0.35)"  },
-    info:    { bg:"rgba(59,130,246,0.1)",  border:"rgba(59,130,246,0.35)" }
+  var cols={
+    danger:{bg:"rgba(239,68,68,0.1)",bd:"rgba(239,68,68,0.35)"},
+    warn:{bg:"rgba(245,158,11,0.1)",bd:"rgba(245,158,11,0.35)"},
+    success:{bg:"rgba(34,197,94,0.1)",bd:"rgba(34,197,94,0.35)"},
+    info:{bg:"rgba(59,130,246,0.1)",bd:"rgba(59,130,246,0.35)"}
   };
-
-  document.getElementById("alerts-list").innerHTML = alerts.map(function(a) {
-    return '<div class="alert-item" style="background:' + colors[a.type].bg + ';border:1px solid ' + colors[a.type].border + '">'
-      + '<span class="alert-icon">' + a.icon + '</span>'
-      + '<span>' + a.msg + '</span>'
-      + '</div>';
+  document.getElementById("alerts-list").innerHTML=alerts.map(function(a){
+    return '<div class="alert-item" style="background:'+cols[a.t].bg+';border:1px solid '+cols[a.t].bd+'">'
+      +'<span class="alert-icon">'+a.i+'</span><span>'+a.m+'</span></div>';
   }).join("");
+
+  // Timestamp
+  try{s("last-updated","Updated "+new Date(updated).toLocaleTimeString());}catch(e){s("last-updated","Live");}
+  document.getElementById("loader").style.display="none";
+  document.getElementById("main").style.display="block";
 }
 
-// ── SAMPLE DATA (used when Sheet fails) ──────────────────────
-function getSampleData() {
-  return [
-    new Date().toISOString(),
-    "24","61","8","3","9240",
-    "18","4","2",
-    "38","29","24","8","61"
-  ];
+function sample(){
+  return[new Date().toISOString(),
+    "18","24","5","3","14200","12","2","1",
+    "8","4","12","18","24","7","3","14","18","3",
+    "18.5","4.2","3.8","2","4","3","4","1"];
 }
+function n(v){return parseInt(v)||0}
+function f(v){return parseFloat(v)||0}
+function s(id,val){var el=document.getElementById(id);if(el)el.textContent=val}
+function showError(msg){var b=document.getElementById("error-banner");b.style.display="block";b.innerHTML="<strong>⚠️ Showing sample data —</strong> "+msg}
 
-// ── HELPERS ───────────────────────────────────────────────────
-function set(id, val) {
-  var el = document.getElementById(id);
-  if (el) el.textContent = val;
-}
-function int(v)   { return parseInt(v)   || 0; }
-function float(v) { return parseFloat(v) || 0; }
-
-function showError(msg) {
-  var b = document.getElementById("error-banner");
-  b.style.display = "block";
-  b.innerHTML = "<strong>⚠️ Showing sample data —</strong> " + msg;
-}
-
-// Start + auto-refresh
 loadData();
-setInterval(loadData, REFRESH_MS);
+setInterval(loadData,REFRESH_MS);
 </script>
 
 </body>
