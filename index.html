@@ -2,167 +2,189 @@
 
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>DriveReadyMA Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-:root {
-–bg: #080c14;
-–panel: #0f1623;
-–card: #141d2b;
-–border: #1e2d42;
-–blue: #3b82f6;
-–green: #22c55e;
-–red: #ef4444;
-–amber: #f59e0b;
-–teal: #14b8a6;
-–purple: #a78bfa;
-–text: #e2eaf6;
-–sub: #5a7a9e;
-–muted: #1e2d42;
+:root{
+–bg:#080c14;
+–panel:#0f1623;
+–card:#141d2b;
+–border:#1e2d42;
+–blue:#3b82f6;
+–green:#22c55e;
+–red:#ef4444;
+–amber:#f59e0b;
+–teal:#14b8a6;
+–purple:#a78bfa;
+–text:#e2eaf6;
+–sub:#5a7a9e;
+–muted:#1e2d42;
 }
 
-body {
-background: var(–bg);
-color: var(–text);
-font-family: ‘DM Sans’, ‘Segoe UI’, sans-serif;
-font-size: 14px;
-padding: 0;
+body{
+background:var(–bg);
+color:var(–text);
+font-family:‘DM Sans’,‘Segoe UI’,sans-serif;
+font-size:14px;
+padding:0;
 }
+
+/* ERROR BANNER */
+#error-banner{
+display:none;
+background:rgba(239,68,68,0.12);
+border-bottom:2px solid rgba(239,68,68,0.5);
+color:#fca5a5;
+padding:12px 24px;
+font-size:13px;
+line-height:1.6;
+}
+
+/* LOADER */
+#loader{
+position:fixed;inset:0;background:var(–bg);
+display:flex;flex-direction:column;align-items:center;justify-content:center;
+z-index:999;gap:14px;
+}
+.spinner{
+width:36px;height:36px;border:3px solid var(–border);
+border-top-color:var(–blue);border-radius:50%;
+animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-label{color:var(–sub);font-size:13px}
 
 /* HEADER */
-.header {
-background: var(–panel);
-border-bottom: 1px solid var(–border);
-padding: 14px 24px;
-display: flex;
-align-items: center;
-justify-content: space-between;
-flex-wrap: wrap;
-gap: 10px;
+.header{
+background:var(–panel);
+border-bottom:1px solid var(–border);
+padding:14px 24px;
+display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
 }
-.logo { display: flex; align-items: center; gap: 10px; }
-.logo-icon {
-background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-border-radius: 8px; width: 34px; height: 34px;
-display: flex; align-items: center; justify-content: center; font-size: 18px;
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{
+background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+border-radius:8px;width:34px;height:34px;
+display:flex;align-items:center;justify-content:center;font-size:18px;
 }
-.logo-name { font-weight: 800; font-size: 16px; }
-.logo-sub { color: var(–sub); font-size: 11px; }
-.header-date { color: var(–sub); font-size: 12px; }
+.logo-name{font-weight:800;font-size:16px}
+.logo-sub{color:var(–sub);font-size:11px}
+.live-pill{
+display:flex;align-items:center;gap:6px;
+background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);
+color:var(–green);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(–green);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+#last-updated{color:var(–sub);font-size:12px}
 
 /* MAIN */
-.main { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+.main{padding:20px 24px;max-width:1400px;margin:0 auto}
 
 /* PANELS */
-.panel {
-background: var(–panel);
-border: 1px solid var(–border);
-border-radius: 12px;
-padding: 18px 20px;
-}
-.section-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-.section-sub { color: var(–sub); font-size: 12px; margin-bottom: 14px; }
+.panel{background:var(–panel);border:1px solid var(–border);border-radius:12px;padding:18px 20px}
+.section-title{font-weight:700;font-size:14px;margin-bottom:4px}
+.section-sub{color:var(–sub);font-size:12px;margin-bottom:14px}
 
 /* KPI ROW */
-.kpi-row { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-.kpi-card {
-background: var(–panel);
-border: 1px solid var(–border);
-border-radius: 10px;
-padding: 16px 18px;
-flex: 1;
-min-width: 140px;
-border-top-width: 3px;
+.kpi-row{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.kpi-card{
+background:var(–panel);border:1px solid var(–border);
+border-radius:10px;padding:16px 18px;flex:1;min-width:140px;border-top-width:3px;
 }
-.kpi-label { color: var(–sub); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
-.kpi-value { font-size: 26px; font-weight: 800; line-height: 1; }
-.kpi-sub { font-size: 12px; margin-top: 5px; font-weight: 600; }
+.kpi-label{color:var(–sub);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.kpi-value{font-size:26px;font-weight:800;line-height:1}
+.kpi-sub{font-size:12px;margin-top:5px;font-weight:600}
 
 /* CHARTS ROW */
-.charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
-.chart-stack { display: flex; flex-direction: column; gap: 16px; }
-.chart-wrap { position: relative; }
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+.chart-stack{display:flex;flex-direction:column;gap:16px}
+.chart-wrap{position:relative}
 
 /* SCHEDULING ROW */
-.sched-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.sched-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
 
-.lesson-item {
-display: flex; justify-content: space-between; align-items: center;
-padding: 9px 12px; border-radius: 8px;
-background: rgba(255,255,255,0.03);
-border: 1px solid var(–border);
-margin-bottom: 8px;
+.lesson-item{
+display:flex;justify-content:space-between;align-items:center;
+padding:9px 12px;border-radius:8px;
+background:rgba(255,255,255,0.03);border:1px solid var(–border);margin-bottom:8px;
 }
-.lesson-open {
-background: rgba(239,68,68,0.08);
-border: 1px dashed var(–red);
-}
-.lesson-name { font-weight: 600; font-size: 13px; }
-.lesson-open .lesson-name { color: var(–red); font-style: italic; font-weight: 400; }
-.lesson-time { color: var(–sub); font-size: 11px; margin-top: 2px; }
-.lesson-badge {
-background: rgba(255,255,255,0.06); color: var(–sub);
-font-size: 11px; padding: 3px 9px; border-radius: 20px;
-}
-.open-badge { color: var(–red); font-size: 11px; font-weight: 700; }
+.lesson-open{background:rgba(239,68,68,0.08);border:1px dashed var(–red)}
+.lesson-name{font-weight:600;font-size:13px}
+.lesson-open .lesson-name{color:var(–red);font-style:italic;font-weight:400}
+.lesson-time{color:var(–sub);font-size:11px;margin-top:2px}
+.lesson-badge{background:rgba(255,255,255,0.06);color:var(–sub);font-size:11px;padding:3px 9px;border-radius:20px}
+.open-badge{color:var(–red);font-size:11px;font-weight:700}
 
-.noshow-row { display: flex; gap: 12px; margin-top: 14px; }
-.ns-card {
-flex: 1; border-radius: 8px; padding: 12px 16px; text-align: center;
-}
-.ns-value { font-size: 24px; font-weight: 800; }
-.ns-label { color: var(–sub); font-size: 11px; margin-top: 4px; }
+.noshow-row{display:flex;gap:12px;margin-top:14px}
+.ns-card{flex:1;border-radius:8px;padding:12px 16px;text-align:center}
+.ns-value{font-size:24px;font-weight:800}
+.ns-label{color:var(–sub);font-size:11px;margin-top:4px}
 
 /* AUTOMATION */
-.auto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.auto-card {
-background: rgba(255,255,255,0.03);
-border: 1px solid var(–border);
-border-radius: 10px;
-padding: 14px;
-border-left-width: 3px;
+.auto-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.auto-card{
+background:rgba(255,255,255,0.03);border:1px solid var(–border);
+border-radius:10px;padding:14px;border-left-width:3px;
 }
-.auto-label { color: var(–sub); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
-.auto-value { font-size: 22px; font-weight: 800; margin-top: 4px; }
-.auto-sub { color: var(–sub); font-size: 11px; margin-top: 2px; }
+.auto-label{color:var(–sub);font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.auto-value{font-size:22px;font-weight:800;margin-top:4px}
+.auto-sub{color:var(–sub);font-size:11px;margin-top:2px}
 
 /* PIPELINE */
-.pipe-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.pipe-label { min-width: 90px; font-size: 12px; color: var(–sub); }
-.pipe-bar-bg { flex: 1; height: 28px; background: var(–card); border-radius: 6px; overflow: hidden; }
-.pipe-bar {
-height: 100%; border-radius: 6px;
-display: flex; align-items: center; padding-left: 10px;
-font-size: 12px; font-weight: 700; color: #fff;
-transition: width 1s ease;
+.pipe-item{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pipe-label{min-width:90px;font-size:12px;color:var(–sub)}
+.pipe-bar-bg{flex:1;height:28px;background:var(–card);border-radius:6px;overflow:hidden}
+.pipe-bar{
+height:100%;border-radius:6px;
+display:flex;align-items:center;padding-left:10px;
+font-size:12px;font-weight:700;color:#fff;transition:width 1s ease;
 }
 
 /* ALERTS */
-.alert-item {
-border-radius: 10px; padding: 12px 16px;
-display: flex; align-items: center; gap: 10px;
-margin-bottom: 10px; font-size: 13px; line-height: 1.5;
+.alert-item{
+border-radius:10px;padding:12px 16px;
+display:flex;align-items:center;gap:10px;
+margin-bottom:10px;font-size:13px;line-height:1.5;
 }
-.alert-icon { font-size: 18px; flex-shrink: 0; }
+.alert-icon{font-size:18px;flex-shrink:0}
 
 /* BOTTOM GRID */
-.bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
 
-@media (max-width: 900px) {
-.charts-row, .sched-row, .bottom-row { grid-template-columns: 1fr; }
-.kpi-row { gap: 8px; }
-.kpi-card { min-width: 120px; }
+@media(max-width:900px){
+.charts-row,.sched-row,.bottom-row{grid-template-columns:1fr}
+.kpi-row{gap:8px}
+.kpi-card{min-width:120px}
 }
 </style>
 
 </head>
 <body>
+
+<!-- YOUR GOOGLE SHEET CSV URL -->
+
+<script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxkkFxIeAba2pCfkWUatRbXIejuX9H5rKN6_mmm2tJqx7vw3ROw2MQZNABsrPkPA6V89Jd9pfiEqpM/pub?gid=1162947563&single=true&output=csv";
+const REFRESH_MS = 5 * 60 * 1000;
+</script>
+
+<!-- LOADER -->
+
+<div id="loader">
+  <div class="spinner"></div>
+  <div class="loader-label">Loading DriveReadyMA data...</div>
+</div>
+
+<!-- ERROR BANNER -->
+
+<div id="error-banner"></div>
 
 <!-- HEADER -->
 
@@ -174,38 +196,39 @@ margin-bottom: 10px; font-size: 13px; line-height: 1.5;
       <div class="logo-sub">Performance Dashboard</div>
     </div>
   </div>
-  <div class="header-date">Last 7 Days &nbsp;·&nbsp; Norwood, MA</div>
+  <div class="live-pill"><div class="live-dot"></div>LIVE</div>
+  <div id="last-updated">Loading...</div>
 </div>
 
-<div class="main">
+<div class="main" id="main-content" style="display:none">
 
   <!-- KPI CARDS -->
 
   <div class="kpi-row">
-    <div class="kpi-card" style="border-top-color: var(--blue)">
-      <div class="kpi-label">Leads</div>
-      <div class="kpi-value">124</div>
-      <div class="kpi-sub" style="color:var(--green)">↑ +18% vs last week</div>
+    <div class="kpi-card" style="border-top-color:var(--blue)">
+      <div class="kpi-label">Active Students</div>
+      <div class="kpi-value" id="k-active">—</div>
+      <div class="kpi-sub" style="color:var(--blue)">Training in progress</div>
     </div>
-    <div class="kpi-card" style="border-top-color: var(--green)">
-      <div class="kpi-label">Appointments Booked</div>
-      <div class="kpi-value">78</div>
-      <div class="kpi-sub" style="color:var(--green)">62% conversion rate</div>
+    <div class="kpi-card" style="border-top-color:var(--green)">
+      <div class="kpi-label">Completed Students</div>
+      <div class="kpi-value" id="k-completed">—</div>
+      <div class="kpi-sub" style="color:var(--green)">Training finished</div>
     </div>
-    <div class="kpi-card" style="border-top-color: var(--red)">
-      <div class="kpi-label">Show Rate</div>
-      <div class="kpi-value">71%</div>
-      <div class="kpi-sub" style="color:var(--red)">↓ -5% needs attention</div>
+    <div class="kpi-card" style="border-top-color:var(--purple)">
+      <div class="kpi-label">Road Test Eligible</div>
+      <div class="kpi-value" id="k-eligible">—</div>
+      <div class="kpi-sub" style="color:var(--purple)" id="k-eligible-sub">Ready to schedule</div>
     </div>
-    <div class="kpi-card" style="border-top-color: var(--teal)">
-      <div class="kpi-label">Est. Revenue</div>
-      <div class="kpi-value">$9,240</div>
-      <div class="kpi-sub" style="color:var(--teal)">$118 avg per student</div>
+    <div class="kpi-card" style="border-top-color:var(--red)">
+      <div class="kpi-label">Unpaid Balances</div>
+      <div class="kpi-value" id="k-unpaid">—</div>
+      <div class="kpi-sub" id="k-unpaid-sub" style="color:var(--red)">Need collection</div>
     </div>
-    <div class="kpi-card" style="border-top-color: var(--amber)">
-      <div class="kpi-label">Missed Calls Recovered</div>
-      <div class="kpi-value">23</div>
-      <div class="kpi-sub" style="color:var(--amber)">8 converted to bookings</div>
+    <div class="kpi-card" style="border-top-color:var(--teal)">
+      <div class="kpi-label">Revenue Collected</div>
+      <div class="kpi-value" id="k-revenue">—</div>
+      <div class="kpi-sub" style="color:var(--teal)">This month</div>
     </div>
   </div>
 
@@ -213,21 +236,21 @@ margin-bottom: 10px; font-size: 13px; line-height: 1.5;
 
   <div class="charts-row">
     <div class="panel">
-      <div class="section-title">Leads vs Bookings Trend</div>
-      <div class="section-sub">Daily performance this week</div>
+      <div class="section-title">Student Pipeline — Driving School Pipeline</div>
+      <div class="section-sub">All stages this month</div>
       <div class="chart-wrap" style="height:200px">
         <canvas id="lineChart"></canvas>
       </div>
     </div>
     <div class="chart-stack">
       <div class="panel" style="flex:1">
-        <div class="section-title">Lead Sources</div>
+        <div class="section-title">Training Status</div>
         <div class="chart-wrap" style="height:130px">
           <canvas id="pieChart"></canvas>
         </div>
       </div>
       <div class="panel" style="flex:1">
-        <div class="section-title">Conversion Funnel</div>
+        <div class="section-title">Appointments This Week</div>
         <div class="chart-wrap" style="height:110px">
           <canvas id="funnelChart"></canvas>
         </div>
@@ -239,64 +262,62 @@ margin-bottom: 10px; font-size: 13px; line-height: 1.5;
 
   <div class="sched-row">
     <div class="panel">
-      <div class="section-title">Upcoming Lessons</div>
-      <div class="section-sub">Next 3 days</div>
-      <div class="lesson-item">
-        <div><div class="lesson-name">Marcus Johnson</div><div class="lesson-time">Today 2:00 PM</div></div>
-        <div class="lesson-badge">Mr. Rivera</div>
-      </div>
-      <div class="lesson-item">
-        <div><div class="lesson-name">Aaliyah Brooks</div><div class="lesson-time">Today 4:30 PM</div></div>
-        <div class="lesson-badge">Ms. Chen</div>
-      </div>
-      <div class="lesson-item">
-        <div><div class="lesson-name">Tyler Santos</div><div class="lesson-time">Tomorrow 10:00 AM</div></div>
-        <div class="lesson-badge">Mr. Rivera</div>
-      </div>
-      <div class="lesson-item lesson-open">
-        <div><div class="lesson-name">— OPEN SLOT —</div><div class="lesson-time">Tomorrow 1:00 PM</div></div>
-        <div class="open-badge">FILL THIS</div>
-      </div>
-      <div class="lesson-item">
-        <div><div class="lesson-name">Destiny Williams</div><div class="lesson-time">Thu 9:00 AM</div></div>
-        <div class="lesson-badge">Ms. Chen</div>
-      </div>
-      <div class="noshow-row">
-        <div class="ns-card" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3)">
-          <div class="ns-value" style="color:var(--red)">9</div>
-          <div class="ns-label">No-Shows This Week</div>
-        </div>
-        <div class="ns-card" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3)">
-          <div class="ns-value" style="color:var(--amber)">6</div>
-          <div class="ns-label">Cancellations</div>
-        </div>
-      </div>
-    </div>
+      <div class="section-title">Weekly Appointment Summary</div>
+      <div class="section-sub">All 4 calendars this week</div>
 
 ```
+  <div class="lesson-item">
+    <div><div class="lesson-name" id="appt-booked-label">— appointments booked</div><div class="lesson-time">This week across all calendars</div></div>
+    <div class="lesson-badge" style="color:var(--green)">BOOKED</div>
+  </div>
+  <div class="lesson-item">
+    <div><div class="lesson-name" id="appt-noshow-label">— no shows</div><div class="lesson-time">Check no-show recovery workflow</div></div>
+    <div class="lesson-badge" id="noshow-badge">NO SHOW</div>
+  </div>
+  <div class="lesson-item">
+    <div><div class="lesson-name" id="appt-cancel-label">— cancellations</div><div class="lesson-time">Consider rescheduling link in workflow</div></div>
+    <div class="lesson-badge" style="color:var(--amber)">CANCELLED</div>
+  </div>
+  <div class="lesson-item lesson-open" id="unpaid-row">
+    <div><div class="lesson-name" id="unpaid-label">— unpaid balances</div><div class="lesson-time">Payment collection needed</div></div>
+    <div class="open-badge">ACTION NEEDED</div>
+  </div>
+
+  <div class="noshow-row">
+    <div class="ns-card" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3)">
+      <div class="ns-value" id="s-noshow" style="color:var(--red)">—</div>
+      <div class="ns-label">No-Shows This Week</div>
+    </div>
+    <div class="ns-card" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3)">
+      <div class="ns-value" id="s-cancel" style="color:var(--amber)">—</div>
+      <div class="ns-label">Cancellations</div>
+    </div>
+  </div>
+</div>
+
 <div class="panel">
-  <div class="section-title">⚡ Automation Performance</div>
-  <div class="section-sub">Your value-add, proven by numbers</div>
+  <div class="section-title">⚡ Pipeline by Stage</div>
+  <div class="section-sub">Students in each phase of training</div>
   <div class="auto-grid">
-    <div class="auto-card" style="border-left-color:var(--green)">
-      <div class="auto-label">Speed to Lead</div>
-      <div class="auto-value" style="color:var(--green)">1m 42s</div>
-      <div class="auto-sub">✅ Under 2-min goal</div>
-    </div>
     <div class="auto-card" style="border-left-color:var(--blue)">
-      <div class="auto-label">SMS Reply Rate</div>
-      <div class="auto-value" style="color:var(--blue)">48%</div>
-      <div class="auto-sub">31 conversations</div>
+      <div class="auto-label">New Lead</div>
+      <div class="auto-value" id="p-newlead" style="color:var(--blue)">—</div>
+      <div class="auto-sub">Inquiry stage</div>
     </div>
-    <div class="auto-card" style="border-left-color:var(--teal)">
-      <div class="auto-label">Missed Call Text-Back</div>
-      <div class="auto-value" style="color:var(--teal)">14/31</div>
-      <div class="auto-sub">responded</div>
+    <div class="auto-card" style="border-left-color:var(--purple)">
+      <div class="auto-label">Registered</div>
+      <div class="auto-value" id="p-registered" style="color:var(--purple)">—</div>
+      <div class="auto-sub">Signed up</div>
     </div>
     <div class="auto-card" style="border-left-color:var(--amber)">
-      <div class="auto-label">Avg Follow-Up Touches</div>
-      <div class="auto-value" style="color:var(--amber)">3.2</div>
-      <div class="auto-sub">per lead</div>
+      <div class="auto-label">In Progress</div>
+      <div class="auto-value" id="p-inprogress" style="color:var(--amber)">—</div>
+      <div class="auto-sub">Active training</div>
+    </div>
+    <div class="auto-card" style="border-left-color:var(--teal)">
+      <div class="auto-label">Road Test</div>
+      <div class="auto-value" id="p-roadtest" style="color:var(--teal)">—</div>
+      <div class="auto-sub">Test ready</div>
     </div>
   </div>
 </div>
@@ -309,49 +330,15 @@ margin-bottom: 10px; font-size: 13px; line-height: 1.5;
   <div class="bottom-row">
     <div class="panel">
       <div class="section-title">Pipeline Overview</div>
-      <div class="section-sub">New Lead → Revenue</div>
-      <div class="pipe-item">
-        <div class="pipe-label">New Leads</div>
-        <div class="pipe-bar-bg"><div class="pipe-bar" style="width:100%;background:var(--blue)">124</div></div>
-      </div>
-      <div class="pipe-item">
-        <div class="pipe-label">Contacted</div>
-        <div class="pipe-bar-bg"><div class="pipe-bar" style="width:82%;background:var(--purple)">102</div></div>
-      </div>
-      <div class="pipe-item">
-        <div class="pipe-label">Booked</div>
-        <div class="pipe-bar-bg"><div class="pipe-bar" style="width:63%;background:var(--green)">78</div></div>
-      </div>
-      <div class="pipe-item">
-        <div class="pipe-label">Completed</div>
-        <div class="pipe-bar-bg"><div class="pipe-bar" style="width:49%;background:var(--teal)">61</div></div>
-      </div>
-      <div class="pipe-item">
-        <div class="pipe-label">No Show</div>
-        <div class="pipe-bar-bg"><div class="pipe-bar" style="width:7%;background:var(--red)">9</div></div>
-      </div>
+      <div class="section-sub">New Lead → Completed</div>
+      <div id="pipeline-bars"></div>
     </div>
 
 ```
 <div class="panel">
   <div class="section-title">🚨 Alerts & Insights</div>
-  <div class="section-sub">Action items based on your data</div>
-  <div class="alert-item" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35)">
-    <span class="alert-icon">⚠️</span>
-    <span>Show rate dropped 5% this week — review your reminder sequence</span>
-  </div>
-  <div class="alert-item" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25)">
-    <span class="alert-icon">📉</span>
-    <span>12 missed calls not recovered — check missed call text-back trigger</span>
-  </div>
-  <div class="alert-item" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.35)">
-    <span class="alert-icon">💡</span>
-    <span>18 unbooked leads in last 3 days — launch a re-engagement blast</span>
-  </div>
-  <div class="alert-item" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.35)">
-    <span class="alert-icon">✅</span>
-    <span>Speed-to-lead avg 1:42 — you're beating the 2-minute goal</span>
-  </div>
+  <div class="section-sub">Action items based on your live data</div>
+  <div id="alerts-list"></div>
 </div>
 ```
 
@@ -362,79 +349,284 @@ margin-bottom: 10px; font-size: 13px; line-height: 1.5;
 <script>
 const gridColor = 'rgba(30,45,66,0.8)';
 const tickColor = '#5a7a9e';
+let lineChart, pieChart, funnelChart;
 
-// LINE CHART
-new Chart(document.getElementById('lineChart'), {
-  type: 'line',
-  data: {
-    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-    datasets: [
-      {
-        label: 'Leads',
-        data: [14,18,22,17,28,20,5],
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59,130,246,0.1)',
-        tension: 0.4, pointRadius: 4, borderWidth: 2, fill: true,
-      },
-      {
-        label: 'Bookings',
-        data: [9,11,15,10,18,14,3],
-        borderColor: '#22c55e',
-        backgroundColor: 'rgba(34,197,94,0.07)',
-        tension: 0.4, pointRadius: 4, borderWidth: 2, fill: true,
+// ── LOAD DATA FROM GOOGLE SHEET ───────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch(SHEET_URL + "&cachebust=" + Date.now());
+
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status + " — check that your Sheet is published publicly.");
+    }
+
+    const text = await res.text();
+
+    // If Google returns HTML instead of CSV, sheet isn't published
+    if (text.trim().startsWith("<!") || text.trim().startsWith("<html")) {
+      throw new Error("Sheet not published. Open Google Sheets → File → Share → Publish to web → Dashboard_Summary tab → CSV → Publish.");
+    }
+
+    const rows = parseCSV(text);
+
+    if (rows.length < 2) {
+      throw new Error("No data row in sheet yet. Run testWebhook() in Google Apps Script to write test data.");
+    }
+
+    if (!rows[1][0] || rows[1][0] === "Last Updated") {
+      throw new Error("Dashboard_Summary tab is empty. Run testWebhook() in Apps Script to populate it.");
+    }
+
+    // Hide error banner and render
+    document.getElementById("error-banner").style.display = "none";
+    renderDashboard(rows[1]);
+
+  } catch(err) {
+    showError(err.message);
+    renderDashboard(getSampleData()); // always show something
+  }
+}
+
+function parseCSV(text) {
+  return text.trim().split("\n").map(function(line) {
+    var cells = [], cur = "", inQ = false;
+    for (var i = 0; i < line.length; i++) {
+      if (line[i] === '"') { inQ = !inQ; }
+      else if (line[i] === ',' && !inQ) { cells.push(cur.trim()); cur = ""; }
+      else { cur += line[i]; }
+    }
+    cells.push(cur.trim());
+    return cells;
+  });
+}
+
+// ── RENDER DASHBOARD FROM DATA ROW ───────────────────────────
+function renderDashboard(d) {
+  // Column map: A=0 B=1 C=2 D=3 E=4 F=5 G=6 H=7 I=8 J=9 K=10 L=11 M=12 N=13
+  var updated   = d[0]  || new Date().toISOString();
+  var active    = int(d[1]);
+  var completed = int(d[2]);
+  var eligible  = int(d[3]);
+  var unpaid    = int(d[4]);
+  var revenue   = float(d[5]);
+  var booked    = int(d[6]);
+  var noShows   = int(d[7]);
+  var cancels   = int(d[8]);
+  var pNew      = int(d[9]);
+  var pReg      = int(d[10]);
+  var pInProg   = int(d[11]);
+  var pRoadTest = int(d[12]);
+  var pDone     = int(d[13]);
+
+  // KPI cards
+  set("k-active",    active);
+  set("k-completed", completed);
+  set("k-eligible",  eligible);
+  set("k-unpaid",    unpaid);
+  set("k-revenue",   "$" + revenue.toLocaleString());
+
+  // Unpaid sub color
+  var unpaidSub = document.getElementById("k-unpaid-sub");
+  if (unpaid === 0) {
+    unpaidSub.textContent = "✅ All paid up";
+    unpaidSub.style.color = "var(--green)";
+  } else {
+    unpaidSub.textContent = unpaid + " need collection";
+    unpaidSub.style.color = "var(--red)";
+  }
+
+  // Eligible sub
+  if (eligible > 0) {
+    document.getElementById("k-eligible-sub").textContent = eligible + " ready to schedule";
+  }
+
+  // Appointment summary rows
+  set("appt-booked-label", booked + " appointments booked");
+  set("appt-noshow-label", noShows + " no shows");
+  set("appt-cancel-label", cancels + " cancellations");
+  set("unpaid-label",      unpaid + " unpaid balances");
+  set("s-noshow", noShows);
+  set("s-cancel",  cancels);
+
+  // No show badge color
+  document.getElementById("noshow-badge").style.color = noShows > 3 ? "var(--red)" : "var(--sub)";
+
+  // Unpaid row — hide if zero
+  document.getElementById("unpaid-row").style.display = unpaid === 0 ? "none" : "flex";
+
+  // Pipeline stage cards
+  set("p-newlead",    pNew);
+  set("p-registered", pReg);
+  set("p-inprogress", pInProg);
+  set("p-roadtest",   pRoadTest);
+
+  // Last updated
+  try {
+    set("last-updated", "Updated " + new Date(updated).toLocaleTimeString());
+  } catch(e) {
+    set("last-updated", "Live");
+  }
+
+  // Charts
+  buildBarChart(pNew, pReg, pInProg, pRoadTest, pDone);
+  buildPieChart(active, completed, eligible);
+  buildApptChart(booked, noShows, cancels);
+
+  // Pipeline bars
+  buildPipelineBars(pNew, pReg, pInProg, pRoadTest, pDone);
+
+  // Alerts
+  buildAlerts(active, completed, eligible, unpaid, noShows, booked, revenue, cancels);
+
+  // Show dashboard, hide loader
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("main-content").style.display = "block";
+}
+
+// ── CHARTS ────────────────────────────────────────────────────
+function buildBarChart(n, r, ip, rt, c) {
+  if (lineChart) lineChart.destroy();
+  lineChart = new Chart(document.getElementById("lineChart"), {
+    type: "bar",
+    data: {
+      labels: ["New Lead","Registered","In Progress","Road Test","Completed"],
+      datasets: [{
+        data: [n, r, ip, rt, c],
+        backgroundColor: ["#3b82f6","#a78bfa","#f59e0b","#14b8a6","#22c55e"],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
+        y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } }
       }
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: tickColor, font: { size: 11 } } } },
-    scales: {
-      x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
-      y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } }
     }
-  }
-});
+  });
+}
 
-// PIE CHART
-new Chart(document.getElementById('pieChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Website','Calls','SMS','Referral'],
-    datasets: [{
-      data: [45, 28, 17, 10],
-      backgroundColor: ['#3b82f6','#22c55e','#f59e0b','#a78bfa'],
-      borderWidth: 0,
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'right', labels: { color: tickColor, font: { size: 10 }, boxWidth: 10 } }
+function buildPieChart(active, completed, eligible) {
+  if (pieChart) pieChart.destroy();
+  pieChart = new Chart(document.getElementById("pieChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["In Progress","Completed","Road Test Ready"],
+      datasets: [{
+        data: [active, completed, eligible],
+        backgroundColor: ["#3b82f6","#22c55e","#a78bfa"],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: "right", labels: { color: tickColor, font: { size: 10 }, boxWidth: 10 } } }
     }
-  }
-});
+  });
+}
 
-// FUNNEL (horizontal bar)
-new Chart(document.getElementById('funnelChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Leads','Contacted','Booked','Showed'],
-    datasets: [{
-      data: [124, 102, 78, 61],
-      backgroundColor: '#3b82f6',
-      borderRadius: 4,
-    }]
-  },
-  options: {
-    indexAxis: 'y',
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 } } },
-      y: { grid: { display: false }, ticks: { color: tickColor, font: { size: 10 } } }
+function buildApptChart(booked, noShow, cancel) {
+  if (funnelChart) funnelChart.destroy();
+  funnelChart = new Chart(document.getElementById("funnelChart"), {
+    type: "bar",
+    data: {
+      labels: ["Booked","No Show","Cancelled"],
+      datasets: [{
+        data: [booked, noShow, cancel],
+        backgroundColor: ["#22c55e","#ef4444","#f59e0b"],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 } } },
+        y: { grid: { display: false }, ticks: { color: tickColor, font: { size: 10 } } }
+      }
     }
-  }
-});
+  });
+}
+
+function buildPipelineBars(n, r, ip, rt, c) {
+  var max = Math.max(n, 1);
+  var stages = [
+    { label: "New Lead",    val: n,  color: "var(--blue)"   },
+    { label: "Registered",  val: r,  color: "var(--purple)" },
+    { label: "In Progress", val: ip, color: "var(--amber)"  },
+    { label: "Road Test",   val: rt, color: "var(--teal)"   },
+    { label: "Completed",   val: c,  color: "var(--green)"  }
+  ];
+  document.getElementById("pipeline-bars").innerHTML = stages.map(function(s) {
+    var pct = Math.max(6, (s.val / max) * 100);
+    return '<div class="pipe-item">'
+      + '<div class="pipe-label">' + s.label + '</div>'
+      + '<div class="pipe-bar-bg"><div class="pipe-bar" style="width:' + pct + '%;background:' + s.color + '">' + s.val + '</div></div>'
+      + '</div>';
+  }).join("");
+}
+
+function buildAlerts(active, completed, eligible, unpaid, noShows, booked, revenue, cancels) {
+  var alerts = [];
+  if (unpaid > 0)
+    alerts.push({ type:"danger", icon:"💸", msg: unpaid + " student" + (unpaid > 1 ? "s have" : " has") + " an unpaid balance — trigger payment collection workflow now" });
+  if (eligible > 0)
+    alerts.push({ type:"info", icon:"🚗", msg: eligible + " student" + (eligible > 1 ? "s are" : " is") + " road test eligible — reach out to schedule their test" });
+  if (noShows > 3)
+    alerts.push({ type:"warn", icon:"⚠️", msg: noShows + " no-shows this week — verify your 2-hour reminder SMS workflow is active" });
+  if (unpaid === 0 && active > 0)
+    alerts.push({ type:"success", icon:"✅", msg: "All student balances paid — payment collection workflow running correctly" });
+  if (revenue > 0)
+    alerts.push({ type:"success", icon:"💰", msg: "$" + revenue.toLocaleString() + " collected this month — " + completed + " students completed training" });
+  if (booked > 10)
+    alerts.push({ type:"success", icon:"📅", msg: "Strong booking week — " + booked + " appointments across all 4 calendars" });
+  if (alerts.length === 0)
+    alerts.push({ type:"info", icon:"📊", msg: "Dashboard connected. Data will populate as students move through your pipeline." });
+
+  var colors = {
+    danger:  { bg:"rgba(239,68,68,0.1)",   border:"rgba(239,68,68,0.35)"  },
+    warn:    { bg:"rgba(245,158,11,0.1)",  border:"rgba(245,158,11,0.35)" },
+    success: { bg:"rgba(34,197,94,0.1)",   border:"rgba(34,197,94,0.35)"  },
+    info:    { bg:"rgba(59,130,246,0.1)",  border:"rgba(59,130,246,0.35)" }
+  };
+
+  document.getElementById("alerts-list").innerHTML = alerts.map(function(a) {
+    return '<div class="alert-item" style="background:' + colors[a.type].bg + ';border:1px solid ' + colors[a.type].border + '">'
+      + '<span class="alert-icon">' + a.icon + '</span>'
+      + '<span>' + a.msg + '</span>'
+      + '</div>';
+  }).join("");
+}
+
+// ── SAMPLE DATA (used when Sheet fails) ──────────────────────
+function getSampleData() {
+  return [
+    new Date().toISOString(),
+    "24","61","8","3","9240",
+    "18","4","2",
+    "38","29","24","8","61"
+  ];
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function set(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function int(v)   { return parseInt(v)   || 0; }
+function float(v) { return parseFloat(v) || 0; }
+
+function showError(msg) {
+  var b = document.getElementById("error-banner");
+  b.style.display = "block";
+  b.innerHTML = "<strong>⚠️ Showing sample data —</strong> " + msg;
+}
+
+// Start + auto-refresh
+loadData();
+setInterval(loadData, REFRESH_MS);
 </script>
 
 </body>
